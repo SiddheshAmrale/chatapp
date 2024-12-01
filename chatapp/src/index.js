@@ -1,17 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom';
+import { MsalProvider } from '@azure/msal-react';
+import { PublicClientApplication } from '@azure/msal-browser';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { createRoot } from 'react-dom/client'
+import { MicrosoftSignIn } from './MicrosoftSignIn';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// MSAL configuration
+const msalConfig = {
+  auth: {
+    clientId: '7fee19fd-ae35-40e1-b839-4df871783dcd',  // Replace with your actual Client ID
+    authority: 'https://login.microsoftonline.com/common',
+    redirectUri: window.location.origin,  // The URI to redirect to after authentication
+  },
+};
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const initializeApp = async () => {
+  const msalInstance = await PublicClientApplication.createPublicClientApplication(msalConfig);
+  createRoot(document.getElementById('root')).render(
+    <MsalProvider instance={msalInstance}>
+      <MicrosoftSignIn />
+    </MsalProvider>
+  );
+};
+
+initializeApp();
+
