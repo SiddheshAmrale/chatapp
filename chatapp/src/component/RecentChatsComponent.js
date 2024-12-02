@@ -14,7 +14,6 @@ import Button from '@mui/material/Button';
 const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
-    const [groupEmails, setGroupEmails] = useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -23,14 +22,12 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
     const handleClose = () => {
         setOpen(false);
         setEmail('');
-        setGroupEmails('');
     };
 
     const handleCreateChat = () => {
         if (email) {
-            onCreateChat([email]);
-        } else if (groupEmails) {
-            onCreateChat(groupEmails.split(',').map(email => email.trim()));
+            console.log("Chat Created with email", email);
+            onCreateChat(email);
         }
         handleClose();
     };
@@ -42,7 +39,10 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
             </IconButton>
             <List>
                 {chats.map((chat, index) => (
-                    <ListItem button key={index} onClick={() => onSelectChat(chat)}>
+                    <ListItem button key={index} onClick={() => {
+                        console.log("Chat clicked:", chat); // Add this line
+                        onSelectChat(chat);
+                    }}>
                         <ListItemText primary={chat.name} />
                     </ListItem>
                 ))}
@@ -59,15 +59,6 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         helperText="Enter a single email ID for a one-on-one chat"
-                    />
-                    <TextField
-                        margin="dense"
-                        label="Group Emails"
-                        type="text"
-                        fullWidth
-                        value={groupEmails}
-                        onChange={(e) => setGroupEmails(e.target.value)}
-                        helperText="Enter multiple email IDs separated by commas for a group chat"
                     />
                 </DialogContent>
                 <DialogActions>

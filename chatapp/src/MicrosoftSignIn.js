@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useMsal, AuthenticatedTemplate, UnauthenticatedTemplate, useIsAuthenticated } from '@azure/msal-react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Homepage from './component/Homepage';
+import { Homepage } from './component/Homepage';
 import { InteractionStatus } from '@azure/msal-browser';
 
 export const MicrosoftSignIn = () => {

@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import TopBar from './TopBar';
 import { db } from '../firebase';
-import { collection, addDoc, query, where, onSnapshot, or } from 'firebase/firestore';
+import { collection, addDoc, query, where, onSnapshot } from 'firebase/firestore';
 
 export const Homepage = ({ user }) => {
     console.log(user);
@@ -15,12 +15,14 @@ export const Homepage = ({ user }) => {
 
     useEffect(() => {
         if (user && user.username) {
-            const q = query(collection(db, 'chats'), where('emails', 'array-contains', user.username));
+            const q = query(collection(db, 'chats'));
+            console.log("Q", q)
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const chatsData = [];
                 querySnapshot.forEach((doc) => {
                     chatsData.push({ id: doc.id, ...doc.data() });
                 });
+                console.log("Chats Data", chatsData)
                 setChats(chatsData);
             });
 
@@ -29,47 +31,45 @@ export const Homepage = ({ user }) => {
     }, [user]);
 
     useEffect(() => {
-        if (selectedChat && user && user.username) {
-            const q = query(
-                collection(db, 'chats', selectedChat.id, 'messages'),
-                or(
-                    where('recipient', '==', user.username),
-                    where('sender', '==', user.username)
-                )
-            );
+        //console.log("selected0", selectedChat.id)
+        if (selectedChat) {
+            const q = query(collection(db, 'chats', selectedChat.id, 'messages'));
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const messagesData = [];
                 querySnapshot.forEach((doc) => {
                     messagesData.push({ id: doc.id, ...doc.data() });
                 });
                 setMessages(messagesData);
+                console.log("m", messagesData)
             });
 
             return () => unsubscribe();
         }
-    }, [selectedChat, user]);
+    }, [selectedChat]);
 
     const sendMessage = async (message) => {
-        if (selectedChat && user && user.email) {
+        if (selectedChat && user && user.username) {
+            const recipientEmail = selectedChat.email || 'unknown'; // Default to 'unknown' if email is not defined
             await addDoc(collection(db, 'chats', selectedChat.id, 'messages'), {
                 text: message,
                 createdAt: new Date(),
-                sender: user.email,
-                recipient: selectedChat.email, // Assuming selectedChat has an email field
+                sender: user.username,
+                recipient: recipientEmail,
             });
         }
     };
 
-    const createChat = async (emails) => {
-        const chatName = Array.isArray(emails) ? `Group Chat (${emails.join(', ')})` : `Chat with ${emails}`;
+    const createChat = async (email) => {
+        const chatName = `Chat with ${email}`;
         await addDoc(collection(db, 'chats'), {
             name: chatName,
-            emails: Array.isArray(emails) ? emails : [emails],
+            emails: [email],
             messages: [],
         });
     };
 
     const handleSelectChat = (chat) => {
+        console.log("Selected chat:", chat); // Add this line
         setSelectedChat(chat);
     };
 
@@ -103,5 +103,3 @@ export const Homepage = ({ user }) => {
         </div>
     );
 };
-
-export default Homepage;
