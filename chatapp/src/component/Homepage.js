@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import TopBar from './TopBar';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, onSnapshot, or, orderBy } from 'firebase/firestore';
+import './HomePage.css'; // Import the CSS file
 
 export const Homepage = ({ user }) => {
     console.log(user);
@@ -38,7 +39,7 @@ export const Homepage = ({ user }) => {
                     where('recipient', 'array-contains', user.username),
                     where('sender', '==', user.username)
                 ),
-                orderBy('createdAt', 'asc')
+                orderBy('createdAt', 'asc') // Order by createdAt field in ascending order
             );
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const messagesData = [];
@@ -82,7 +83,6 @@ export const Homepage = ({ user }) => {
     };
 
     const handleSelectChat = (chat) => {
-        console.log("SSS", selectedChat)
         console.log("Selected chat:", chat); // Add this line
         setSelectedChat(chat);
     };
@@ -99,9 +99,12 @@ export const Homepage = ({ user }) => {
                         {selectedChat ? (
                             <div>
                                 <h2>{selectedChat.name}</h2>
-                                <Box>
+                                <Box className="messages-container">
                                     {messages.map((message, index) => (
-                                        <div key={index}>
+                                        <div
+                                            key={index}
+                                            className={`message ${message.sender === user.username ? 'sent' : 'received'}`}
+                                        >
                                             <strong>{message.sender}:</strong> {message.text}
                                         </div>
                                     ))}
