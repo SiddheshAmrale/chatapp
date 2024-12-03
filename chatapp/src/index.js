@@ -1,8 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { MsalProvider } from '@azure/msal-react';
 import { PublicClientApplication } from '@azure/msal-browser';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { createRoot } from 'react-dom/client'
 import { MicrosoftSignIn } from './MicrosoftSignIn';
 

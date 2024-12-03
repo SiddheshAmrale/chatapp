@@ -1,7 +1,6 @@
 // src/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAnalytics } from "firebase/analytics";
 const firebaseConfig = {
     apiKey: "AIzaSyBnWS9v2giqRhXk5K7eFSZzGlSjdf5lODM",
     authDomain: "chatapp-c7976.firebaseapp.com",
