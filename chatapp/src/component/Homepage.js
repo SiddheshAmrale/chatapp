@@ -3,10 +3,9 @@ import MessageComponent from './MessageComponent';
 import RecentChatsComponent from './RecentChatsComponent';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import TopBar from './TopBar';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
+import TopBar from './TopBar';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, onSnapshot, or, orderBy } from 'firebase/firestore';
 import './HomePage.css'; // Import the CSS file
@@ -88,20 +87,20 @@ export const Homepage = ({ user }) => {
             <TopBar user={user} />
             <Box p={2}>
                 <Grid container spacing={2}>
-                    <Grid item xs={3}>
+                    <Grid item xs={12} md={3}>
                         <RecentChatsComponent chats={chats} onSelectChat={handleSelectChat} onCreateChat={createChat} user={user} />
                     </Grid>
-                    <Grid item xs={9}>
+                    <Grid item xs={12} md={9}>
                         {selectedChat ? (
                             <div>
-                                <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+                                <div className="participants">
                                     {selectedChat.emails.filter(email => email !== user.username).map((email, index) => (
-                                        <Avatar key={index} alt={email} src={`https://ui-avatars.com/api/?name=${email}`} />
+                                        <Avatar key={index} alt={email} src={`https://ui-avatars.com/api/?name=${email}`} className="avatar" />
                                     ))}
-                                    <Typography variant="h6">
+                                    <Typography variant="h6" className="name">
                                         {selectedChat.emails.filter(email => email !== user.username).join(', ')}
                                     </Typography>
-                                </Stack>
+                                </div>
                                 <Box className="messages-container">
                                     {messages.map((message, index) => (
                                         <div

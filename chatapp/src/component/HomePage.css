@@ -16,6 +16,7 @@
     border-radius: 10px;
     max-width: 60%;
     word-wrap: break-word;
+    margin-bottom: 10px;
 }
 
 .message.sent {
@@ -29,4 +30,31 @@
     background-color: #ffffff;
     text-align: left;
     border: 1px solid #ddd;
+}
+
+@media (max-width: 600px) {
+    .messages-container {
+        max-height: 50vh;
+    }
+
+    .message {
+        max-width: 80%;
+    }
+}
+
+.participants {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.participants .avatar {
+    width: 40px;
+    height: 40px;
+}
+
+.participants .name {
+    font-size: 1.2em;
+    font-weight: bold;
 }
