@@ -14,7 +14,6 @@ import Button from '@mui/material/Button';
 const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat, user }) => {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
-    console.log("IN RECENT ", chats)
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -26,7 +25,6 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat, user }) => {
 
     const handleCreateChat = () => {
         if (email) {
-            console.log("Chat Created with email", email);
             onCreateChat(email);
         }
         handleClose();
@@ -40,7 +38,6 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat, user }) => {
             <List>
                 {chats.map((chat, index) => (
                     <ListItem button key={index} onClick={() => {
-                        console.log("Chat clicked:", chat); // Add this line
                         onSelectChat(chat);
                     }}>
                         <ListItemText primary={chat.emails.filter(email => email !== user.username)} />

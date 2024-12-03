@@ -12,7 +12,6 @@ import { collection, addDoc, query, where, onSnapshot, or, orderBy } from 'fireb
 import './HomePage.css'; // Import the CSS file
 
 export const Homepage = ({ user }) => {
-    console.log(user);
     const [selectedChat, setSelectedChat] = useState(null);
     const [chats, setChats] = useState([]);
     const [messages, setMessages] = useState([]);
@@ -20,13 +19,11 @@ export const Homepage = ({ user }) => {
     useEffect(() => {
         if (user && user.username) {
             const q = query(collection(db, 'chats'), where('emails', 'array-contains', user.username));
-            console.log("Q", q)
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const chatsData = [];
                 querySnapshot.forEach((doc) => {
                     chatsData.push({ id: doc.id, ...doc.data() });
                 });
-                console.log("Chats Data", chatsData)
                 setChats(chatsData);
             });
 
@@ -50,7 +47,6 @@ export const Homepage = ({ user }) => {
                     messagesData.push({ id: doc.id, ...doc.data() });
                 });
                 setMessages(messagesData);
-                console.log("m", messagesData)
             });
 
             return () => unsubscribe();
@@ -60,8 +56,6 @@ export const Homepage = ({ user }) => {
     const sendMessage = async (message) => {
         if (selectedChat && user && user.username) {
             const recipientEmail = selectedChat.emails.filter(email => email !== user.username) || 'unknown'; // Default to 'unknown' if email is not defined
-            console.log("Sending message:", message);
-            console.log("Recipient email:", recipientEmail);
             try {
                 await addDoc(collection(db, 'chats', selectedChat.id, 'messages'), {
                     text: message,
@@ -86,7 +80,6 @@ export const Homepage = ({ user }) => {
     };
 
     const handleSelectChat = (chat) => {
-        console.log("Selected chat:", chat); // Add this line
         setSelectedChat(chat);
     };
 
