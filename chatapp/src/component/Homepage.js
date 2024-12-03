@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import TopBar from './TopBar';
 import { db } from '../firebase';
-import { collection, addDoc, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, addDoc, query, where, onSnapshot, or, orderBy } from 'firebase/firestore';
 
 export const Homepage = ({ user }) => {
     console.log(user);
@@ -15,7 +15,7 @@ export const Homepage = ({ user }) => {
 
     useEffect(() => {
         if (user && user.username) {
-            const q = query(collection(db, 'chats'));
+            const q = query(collection(db, 'chats'), where('emails', 'array-contains', user.username));
             console.log("Q", q)
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const chatsData = [];
@@ -31,9 +31,15 @@ export const Homepage = ({ user }) => {
     }, [user]);
 
     useEffect(() => {
-        //console.log("selected0", selectedChat.id)
-        if (selectedChat) {
-            const q = query(collection(db, 'chats', selectedChat.id, 'messages'));
+        if (selectedChat && user && user.username) {
+            const q = query(
+                collection(db, 'chats', selectedChat.id, 'messages'),
+                or(
+                    where('recipient', 'array-contains', user.username),
+                    where('sender', '==', user.username)
+                ),
+                orderBy('createdAt', 'asc')
+            );
             const unsubscribe = onSnapshot(q, (querySnapshot) => {
                 const messagesData = [];
                 querySnapshot.forEach((doc) => {
@@ -45,17 +51,24 @@ export const Homepage = ({ user }) => {
 
             return () => unsubscribe();
         }
-    }, [selectedChat]);
+    }, [selectedChat, user]);
 
     const sendMessage = async (message) => {
         if (selectedChat && user && user.username) {
-            const recipientEmail = selectedChat.email || 'unknown'; // Default to 'unknown' if email is not defined
-            await addDoc(collection(db, 'chats', selectedChat.id, 'messages'), {
-                text: message,
-                createdAt: new Date(),
-                sender: user.username,
-                recipient: recipientEmail,
-            });
+            const recipientEmail = selectedChat.emails.filter(email => email !== user.username) || 'unknown'; // Default to 'unknown' if email is not defined
+            console.log("Sending message:", message);
+            console.log("Recipient email:", recipientEmail);
+            try {
+                await addDoc(collection(db, 'chats', selectedChat.id, 'messages'), {
+                    text: message,
+                    createdAt: new Date(),
+                    sender: user.username,
+                    recipient: recipientEmail,
+                });
+                console.log("Message sent successfully");
+            } catch (error) {
+                console.error("Error sending message:", error);
+            }
         }
     };
 
@@ -63,12 +76,13 @@ export const Homepage = ({ user }) => {
         const chatName = `Chat with ${email}`;
         await addDoc(collection(db, 'chats'), {
             name: chatName,
-            emails: [email],
+            emails: [user.username, email],
             messages: [],
         });
     };
 
     const handleSelectChat = (chat) => {
+        console.log("SSS", selectedChat)
         console.log("Selected chat:", chat); // Add this line
         setSelectedChat(chat);
     };
