@@ -11,10 +11,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
-const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
+const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat, user }) => {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState('');
-
+    console.log("IN RECENT ", chats)
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -43,7 +43,7 @@ const RecentChatsComponent = ({ chats, onSelectChat, onCreateChat }) => {
                         console.log("Chat clicked:", chat); // Add this line
                         onSelectChat(chat);
                     }}>
-                        <ListItemText primary={chat.name} />
+                        <ListItemText primary={chat.emails.filter(email => email !== user.username)} />
                     </ListItem>
                 ))}
             </List>

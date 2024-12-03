@@ -4,6 +4,9 @@ import RecentChatsComponent from './RecentChatsComponent';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import TopBar from './TopBar';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
 import { db } from '../firebase';
 import { collection, addDoc, query, where, onSnapshot, or, orderBy } from 'firebase/firestore';
 import './HomePage.css'; // Import the CSS file
@@ -93,12 +96,19 @@ export const Homepage = ({ user }) => {
             <Box p={2}>
                 <Grid container spacing={2}>
                     <Grid item xs={3}>
-                        <RecentChatsComponent chats={chats} onSelectChat={handleSelectChat} onCreateChat={createChat} />
+                        <RecentChatsComponent chats={chats} onSelectChat={handleSelectChat} onCreateChat={createChat} user={user} />
                     </Grid>
                     <Grid item xs={9}>
                         {selectedChat ? (
                             <div>
-                                <h2>{selectedChat.name}</h2>
+                                <Stack direction="row" spacing={2} alignItems="center" mb={2}>
+                                    {selectedChat.emails.filter(email => email !== user.username).map((email, index) => (
+                                        <Avatar key={index} alt={email} src={`https://ui-avatars.com/api/?name=${email}`} />
+                                    ))}
+                                    <Typography variant="h6">
+                                        {selectedChat.emails.filter(email => email !== user.username).join(', ')}
+                                    </Typography>
+                                </Stack>
                                 <Box className="messages-container">
                                     {messages.map((message, index) => (
                                         <div
